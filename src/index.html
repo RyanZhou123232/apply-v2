@@ -1,0 +1,58 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>投递工作流 · 岗位清单</title>
+<style>body{font:15px/1.6 system-ui,sans-serif;max-width:1100px;margin:35px auto;padding:0 22px;background:#f6f7f9;color:#202734}h1{font-size:25px}button,select,input{font:inherit;padding:7px 12px;border:1px solid #bcc4d0;border-radius:5px;background:white}button{cursor:pointer}header,.tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.tools{margin:24px 0}article{background:white;border:1px solid #dde2e8;border-radius:7px;padding:16px 20px;margin:10px 0}h2{font-size:17px;margin:0}p{margin:6px 0}.muted{color:#697386}.badge{font-size:13px;background:#edf0f5;padding:3px 8px;border-radius:4px}a{color:#1d56aa}details{margin-top:10px}#notice{white-space:pre-wrap}small{font-size:12px}
+.layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(260px,1fr);gap:20px;align-items:start}
+#screen{position:sticky;top:14px;margin-top:10px;background:white;border:1px solid #dde2e8;border-radius:7px;padding:16px;max-height:78vh;overflow:auto}
+#screen-list{padding-left:19px}#screen-list li{margin:9px 0}.screen-label{font-weight:600}
+@media(max-width:760px){.layout{grid-template-columns:1fr}#screen{position:static;max-height:none;grid-row:1}}
+</style>
+<header><h1>All Jobs</h1><button id="refresh">检查来源更新</button></header>
+<p class="muted">AI、ML、SWE、Data 和 FDE 岗位。Agent 自行处理，跳过的岗位从清单移除。</p><p id="notice"></p><details><summary>来源读取结果</summary><div id="sources"></div></details>
+<div class="tools"><select id="window"><option value="12">最近 12 小时首次发现</option><option value="all">所有时间</option></select><input id="search" placeholder="搜索公司或职位"><span id="count"></span></div><div class="layout"><main id="list"></main><aside id="screen" aria-labelledby="screen-title">
+<h2 id="screen-title">AI 岗位筛选</h2><p id="screen-summary" aria-live="polite"></p><ol id="screen-list"></ol>
+</aside></div>
+<script>
+const token='__TOKEN__';let state={jobs:[]};const $=id=>document.getElementById(id);const labels={submitted:'已投递'};const relevant=/software|developer|devops|site reliability|\bsre\b|platform.*engineer|engineer.*platform|forward[ -]deployed|\bfde\b|(?:quantitative|ml|ai|computer vision)\s+research|applied scientist|algorithm|full[ -]?stack|front[ -]?end|back[ -]?end|\bweb\b|\bmobile\b|\bdata\b|\banalytics\b|business intelligence|machine learning|\bml\b|\bai\b|artificial intelligence|generative|agentic|\bagent\b|computer vision/i;
+function el(tag,text,cls){let e=document.createElement(tag);e.textContent=text;if(cls)e.className=cls;return e}
+function render(){let q=$('search').value.toLowerCase(),cut=Date.now()-12*3600000;let jobs=state.jobs.filter(j=>['new','queued','submitting','submitted'].includes(j.status)&&relevant.test(j.title)&&($('window').value==='all'||Date.parse(j.first_seen)>=cut)&&(`${j.company} ${j.title}`.toLowerCase().includes(q)));$('count').textContent=jobs.length+' 个';$('list').replaceChildren();for(let j of jobs){let a=el('article','');a.append(el('h2',j.company+' · '+j.title),el('p',j.location,'muted'));if(labels[j.status])a.append(el('span',labels[j.status],'badge'));let p=el('p','');let link=el('a','打开岗位／申请入口');let u=new URL(j.apply_url);if(['https:','http:'].includes(u.protocol)){link.href=u.href;link.target='_blank';link.rel='noopener noreferrer';p.append(link)}a.append(p);let d=el('details','');d.append(el('summary','来源与发现时间'),el('small','首次发现：'+new Date(j.first_seen).toLocaleString('zh-CN',{timeZone:'America/New_York'})+'（匹兹堡时间）｜来源：'+j.sources.join('；')+'。该时间不是官方发布时间。'));a.append(d);$('list').append(a)}if(!jobs.length){let message=state.progress?.running?'正在刷新。完成后列表会自动更新。':$('window').value==='12'?'当前筛选在最近 12 小时内没有匹配岗位。可切换到「所有时间」查看。':'当前筛选没有匹配岗位。';$('list').append(el('p',message))}}
+const decisions={eligible:'推荐投递',ineligible:'不推荐投递',needs_review:'需核实',not_screened:'未评估',pending:'待处理'};
+let lastScreen='';
+function renderScreen(batch){
+  const signature=JSON.stringify(batch);
+  if(signature===lastScreen)return;
+  lastScreen=signature;
+  const list=$('screen-list');
+  list.replaceChildren();
+  if(!batch){$('screen-summary').textContent='暂无筛选批次';return}
+  const counts={};
+  for(const job of batch.jobs)counts[job.decision]=(counts[job.decision]||0)+1;
+  const processed=batch.jobs.length-(counts.pending||0);
+  $('screen-summary').textContent=(batch.running?'正在筛选':'筛选结束')+' · '+processed+'/'+batch.jobs.length+'｜'+
+    ['eligible','ineligible','needs_review','not_screened'].map(key=>decisions[key]+' '+(counts[key]||0)).join(' · ');
+  for(const job of batch.jobs){
+    const row=el('li','');
+    row.append(el('span',decisions[job.decision]||job.decision,'screen-label'),el('p',job.company+' · '+job.title));
+    if(job.reason||job.jd_quote){
+      const details=el('details','');
+      details.append(el('summary','查看判断依据'),el('p',job.reason||''));
+      if(job.jd_quote)details.append(el('p',job.jd_quote,'muted'));
+      if(job.official_url){
+        const url=new URL(job.official_url,location.href);
+        if(url.protocol==='https:'){
+          const link=el('a','查看官方职位');
+          link.href=url.href;link.target='_blank';link.rel='noopener noreferrer';details.append(link);
+        }
+      }
+      row.append(details);
+    }
+    list.append(row);
+  }
+}
+async function load(){try{let r=await fetch('/api/jobs',{headers:{'X-Local-Token':token}});if(!r.ok)throw Error('无法读取列表');state=await r.json();renderScreen(state.screen||null);$('refresh').disabled=state.progress.running;let last=state.last_run;$('notice').textContent=state.progress.error|| (state.progress.running?'正在读取来源并对照历史记录…':last?.counts?'最近一轮新增 '+last.inserted+' 条内部记录。首次运行是当前快照，不代表这些岗位都在过去 12 小时发布。':'尚未运行。点击“检查来源更新”。');$('sources').replaceChildren();for(let s of last?.source_results||[])$('sources').append(el('p',s.source+'：'+(s.error?'读取失败 — '+s.error:s.parsed+' 条读取，'+s.inserted+' 条新记录')));render()}catch(e){$('notice').textContent='服务未连接，请重新打开本地入口。'}}
+$('refresh').onclick=async()=>{let r=await fetch('/api/refresh',{method:'POST',headers:{'X-Local-Token':token}});if(!r.ok)$('notice').textContent='本轮未启动，请检查服务状态。';await load()};const filters = new URLSearchParams(location.search);
+for (const id of ['window']) {
+  const value = filters.get(id);
+  if ([...$(id).options].some(option => option.value === value)) $(id).value = value;
+}
+$('search').value = filters.get('q') || '';
+for(let id of ['window','search'])$(id).oninput=render;load();setInterval(load,5000);
+</script></html>

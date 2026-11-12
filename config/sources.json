@@ -1,0 +1,95 @@
+{
+  "checked_on": "2026-11-01",
+  "status": "manual_discovery_implemented_and_tested",
+  "feeds": [
+    {
+      "repository": "SimplifyJobs/Summer2027-Internships",
+      "url": "https://github.com/SimplifyJobs/Summer2027-Internships",
+      "branch": "dev",
+      "paths": [
+        "README.md",
+        "README-Off-Season.md"
+      ],
+      "purpose": "Primary aggregated internship source; verify current branch and file paths on first integration."
+    },
+    {
+      "repository": "jobright-ai/2026-Software-Engineer-Internship",
+      "url": "https://github.com/jobright-ai/2026-Software-Engineer-Internship",
+      "branch": "master",
+      "paths": [
+        "README.md"
+      ],
+      "purpose": "Supplementary discovery; rolling 7-day subset; includes 2027 jobs despite repository name; links usually lead to Jobright."
+    },
+    {
+      "repository": "jobright-ai/2026-Data-Analysis-Internship",
+      "url": "https://github.com/jobright-ai/2026-Data-Analysis-Internship",
+      "branch": "master",
+      "paths": [
+        "README.md"
+      ],
+      "purpose": "Supplementary data/AI discovery; rolling subset; official employer JD resolution required."
+    },
+    {
+      "repository": "jobright-ai/2026-Engineer-Internship",
+      "url": "https://github.com/jobright-ai/2026-Engineer-Internship",
+      "branch": "master",
+      "paths": [
+        "README.md"
+      ],
+      "purpose": "Supplementary ML and data engineering discovery; filter unrelated engineering; rolling last 7 days."
+    },
+    {
+      "repository": "jobright-ai/2026-Business-Analyst-Internship",
+      "url": "https://github.com/jobright-ai/2026-Business-Analyst-Internship",
+      "branch": "master",
+      "paths": [
+        "README.md"
+      ],
+      "purpose": "Supplementary business/data analytics discovery; verify each role against actual scope."
+    },
+    {
+      "repository": "vanshb03/Summer2027-Internships",
+      "url": "https://github.com/vanshb03/Summer2027-Internships",
+      "branch": "dev",
+      "paths": [
+        "README.md",
+        "OFFSEASON_README.md"
+      ],
+      "purpose": "Additional summer and off-season tech internship aggregator; deduplicate overlaps with Simplify."
+    },
+    {
+      "repository": "speedyapply/2027-AI-College-Jobs",
+      "url": "https://github.com/speedyapply/2027-AI-College-Jobs",
+      "branch": "main",
+      "paths": [
+        "README.md"
+      ],
+      "purpose": "Additional US AI/ML and data science internship discovery; exclude new-grad and international sections."
+    },
+    {
+      "repository": "speedyapply/2027-SWE-College-Jobs",
+      "url": "https://github.com/speedyapply/2027-SWE-College-Jobs",
+      "branch": "main",
+      "paths": [
+        "README.md"
+      ],
+      "purpose": "Additional US SWE internship discovery; exclude new-grad and international sections."
+    }
+  ],
+  "schedule": {
+    "local_times": [
+      "11:00",
+      "23:00"
+    ],
+    "timezone": "America/New_York",
+    "enabled": false,
+    "dst_policy": "Keep Pittsburgh local clock times; elapsed interval can differ on DST transition days."
+  },
+  "submission_enabled": false,
+  "excel_paths_confirmed": true,
+  "retrieval_policy": "Use documented GitHub access with caching and conditional updates. Verify official employer JD; no bypass of login, CAPTCHA or access controls.",
+  "access_test_result": "runs/2026-11-01-access-test/results.json",
+  "official_application_resolution": "Use feed direct employer URL if provided; else search employer by company/title/location/season and verify. Jobright unauthenticated Apply requires login in sampled roles. No automated restricted Jobright access.",
+  "source_validation": "2026-11-01: all 8 repositories / 10 configured files fetched and parsed successfully. Discovery only; official JD verification and complete eligibility review have not been run for the whole backlog."
+}

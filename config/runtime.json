@@ -1,0 +1,10 @@
+{
+  "application_excel": "E:/自动投递工作流v2/tracking/tech投递2027.xlsx",
+  "application_sheet": null,
+  "account_excel": "E:/自动投递工作流v2/tracking/公司账号.xlsx",
+  "openai_model": "gpt-5.4",
+  "max_review_tokens": 2500,
+  "submission_enabled": false,
+  "schedule_enabled": false,
+  "powershell_executable": "C:\\Users\\HUAWEI\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe"
+}

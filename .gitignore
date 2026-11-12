@@ -1,0 +1,34 @@
+# local state, runs and personal tracking (never commit)
+profile/
+state/
+runs/
+tracking/
+tracking/公司账号.xlsx
+tracking/*.backup*.xlsx
+resumes/
+reference doc/all info.txt
+reference doc/archive/
+.env
+*.sqlite*
+*.db
+*session*
+*cookie*
+*.lnk
+*key*.txt
+*token*.json
+
+# python
+.venv/
+__pycache__/
+*.pyc
+
+# Local applicant data and operational records
+/memory/
+/reference doc/
+/docs/
+/.cursor/
+/AGENTS.md
+*.xlsx
+*.docx
+*.pdf
+.env.*
